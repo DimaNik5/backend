@@ -1,10 +1,8 @@
-package bfg.backend.dto.responce.areaInfo;
+package bfg.backend.service.logic.zones;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Area {
     private String name;
@@ -33,18 +31,6 @@ public class Area {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static List<Area> getZones(){
-        int l = 6;
-        List<Area> areas = new ArrayList<>(l);
-        String[] names = {"Равнина1","Равнина2","Высота1","Высота2","Низина1","Низина2"};
-        int[] il = {40, 40, 95, 95, 0, 0};
-        String path = System.getProperty("user.dir");
-        for (int i = 0; i < l; i++) {
-            areas.add(new Area(il[i], path + "/" + names[i] + ".txt", names[i]));
-        }
-        return areas;
     }
 
     public String getName() {

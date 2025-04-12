@@ -1,4 +1,4 @@
-package bfg.backend.dto.responce.areaInfo;
+package bfg.backend.service.logic.zones;
 
 public class Cell {
     private final Integer height;

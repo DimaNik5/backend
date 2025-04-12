@@ -16,7 +16,6 @@ CREATE TABLE module(
     id_user BIGINT REFERENCES users(id) NOT NULL,
     id_zone INTEGER NOT NULL,
     module_type INTEGER NOT NULL,
-    have_link INTEGER,
     x INTEGER NOT NULL,
     y INTEGER NOT NULL
 );

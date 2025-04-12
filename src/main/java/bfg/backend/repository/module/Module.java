@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Module {
+public class Module implements Comparable<Module>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,16 +14,14 @@ public class Module {
     private Long id_user;
     private Integer id_zone;
     private Integer module_type;
-    private Integer have_link;
     private Integer x;
     private Integer y;
 
-    public Module(Long id, Long id_user, Integer id_zone, Integer module_type, Integer have_link, Integer x, Integer y) {
+    public Module(Long id, Long id_user, Integer id_zone, Integer module_type, Integer x, Integer y) {
         this.id = id;
         this.id_user = id_user;
         this.id_zone = id_zone;
         this.module_type = module_type;
-        this.have_link = have_link;
         this.x = x;
         this.y = y;
     }
@@ -62,14 +60,6 @@ public class Module {
         this.module_type = module_type;
     }
 
-    public Integer getHave_link() {
-        return have_link;
-    }
-
-    public void setHave_link(Integer have_link) {
-        this.have_link = have_link;
-    }
-
     public Integer getX() {
         return x;
     }
@@ -84,5 +74,10 @@ public class Module {
 
     public void setY(Integer y) {
         this.y = y;
+    }
+
+    @Override
+    public int compareTo(Module o) {
+        return id.compareTo(o.id);
     }
 }

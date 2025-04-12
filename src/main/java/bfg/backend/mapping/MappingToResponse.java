@@ -27,6 +27,6 @@ public class MappingToResponse {
             resLink.add(new bfg.backend.dto.responce.allUserInfo.Link(link));
         }
 
-        return new AllUserInfo(user.getName(), user.getCurrent_day(), user.getDays_before_delivery(), resResource, resLink, resMod);
+        return new AllUserInfo(user.getName(), user.getId(), user.getCurrent_day(), user.getDays_before_delivery(), resResource, resLink, resMod);
     }
 }

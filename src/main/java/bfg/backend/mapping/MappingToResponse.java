@@ -5,7 +5,6 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.user.User;
 import bfg.backend.repository.resource.Resource;
-import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -2,14 +2,13 @@ package bfg.backend.service;
 
 import bfg.backend.dto.request.modulePlace.ModulePlace;
 import bfg.backend.dto.responce.checkPlace.CheckedPlace;
-import bfg.backend.repository.link.Link;
-import bfg.backend.repository.link.LinkRepository;
+import bfg.backend.repository.link.*;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.module.ModuleRepository;
-import bfg.backend.repository.resource.Resource;
-import bfg.backend.repository.resource.ResourceRepository;
-import bfg.backend.repository.user.User;
-import bfg.backend.repository.user.UserRepository;
+import bfg.backend.repository.resource.*;
+import bfg.backend.repository.user.*;
+import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +41,12 @@ public class CheckPlaceService {
         List<Link> links = linkRepository.findByIdUser(user.getId());
         List<Resource> resources = resourceRepository.findByIdUser(user.getId());
 
+        Component component = TypeModule.values()[modulePlace.typeModule()].
+                createModule(user.getId(), modulePlace.idZone(), modulePlace.x(), modulePlace.y());
 
-        return null;
+        Integer relief = component.getRelief();
+        Integer rationality = component.getRationality(modules, links, resources);
+
+        return new CheckedPlace(relief != null && rationality != null, relief, rationality);
     }
 }

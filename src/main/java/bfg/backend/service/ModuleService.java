@@ -11,6 +11,7 @@ import bfg.backend.repository.user.User;
 import bfg.backend.repository.user.UserRepository;
 import bfg.backend.service.logic.Component;
 import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,11 +26,14 @@ public class ModuleService {
     private final LinkRepository linkRepository;
     private final ResourceRepository resourceRepository;
 
-    public ModuleService(ModuleRepository moduleRepository, UserRepository userRepository, LinkRepository linkRepository, ResourceRepository resourceRepository) {
+    private final ProductionService productionService;
+
+    public ModuleService(ModuleRepository moduleRepository, UserRepository userRepository, LinkRepository linkRepository, ResourceRepository resourceRepository, ProductionService productionService) {
         this.moduleRepository = moduleRepository;
         this.userRepository = userRepository;
         this.linkRepository = linkRepository;
         this.resourceRepository = resourceRepository;
+        this.productionService = productionService;
     }
 
     public void delete(Long idUser, Long id) {
@@ -48,13 +52,14 @@ public class ModuleService {
         Module module = optionalModule.get();
         if(module.getId_user().equals(idUser)){
             moduleRepository.delete(module);
+            productionService.recountingProduction(idUser, moduleRepository, linkRepository, resourceRepository);
         }
         else {
             throw new RuntimeException("Такого модуля нет");
         }
     }
 
-    public Module create(Module module) {
+    public Integer create(Module module) {
         // TODO проверка на возможность поставить?
 
         Optional<User> optionalUser = userRepository.findById(module.getId_user());
@@ -69,9 +74,23 @@ public class ModuleService {
         if(moduleRepository.findById(module.getId()).isPresent()){
             throw new RuntimeException("Такой модуль уже есть");
         }
-        // TODO изменение потребления/произвоодства
-        return moduleRepository.save(module);
+        moduleRepository.save(module);
 
+        productionService.recountingProduction(module.getId_user(), moduleRepository, linkRepository, resourceRepository);
+
+        Optional<Resource> optionalResource = resourceRepository.findById(new Resource.PrimaryKey(TypeResources.MATERIAL.ordinal(), module.getId_user()));
+        if(optionalResource.isEmpty()){
+            throw new RuntimeException("Такого ресурса нет (как так?)");
+        }
+        Resource mat = optionalResource.get();
+        int cost = TypeModule.values()[module.getModule_type()].getCost();
+        mat.setCount(mat.getCount() - cost);
+        if(mat.getCount() < 0){
+            user.setLive(false);
+            userRepository.save(user);
+        }
+
+        return cost;
     }
 
     public List<Optimality> getOptimality(Long idUser){

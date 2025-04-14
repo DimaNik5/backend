@@ -36,6 +36,7 @@ public class SuccessfulService {
         User user = optionalUser.get();
 
         List<Module> modules = moduleRepository.findByIdUser(user.getId());
+        modules.sort(Module::compareTo);
         List<Resource> resources = resourceRepository.findByIdUser(user.getId());
         resources.sort(Resource::compareTo);
 

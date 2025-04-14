@@ -35,7 +35,7 @@ CREATE TABLE resource(
 
 --DROP TABLE link CASCADE;
 CREATE TABLE link(
-    type INTEGER,
+    type INTEGER, -- 0 - провод, 1 - дорога
     id_user BIGINT REFERENCES users(id),
     id_zone1 INTEGER,
     id_zone2 INTEGER,

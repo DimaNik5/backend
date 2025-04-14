@@ -11,6 +11,7 @@ import bfg.backend.repository.resource.*;
 import bfg.backend.repository.user.*;
 import bfg.backend.service.logic.Component;
 import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import bfg.backend.service.logic.zones.Zones;
 import org.springframework.stereotype.Service;
 
@@ -75,12 +76,16 @@ public class UserService {
         }
 
         for (int i = 0; i < Zones.getLength(); i++) {
-            Long production = 0L;
-            Long consumption = 0L;
+            List<Long> production = new ArrayList<>(TypeResources.values().length);
+            List<Long> consumption = new ArrayList<>(TypeResources.values().length);
+            for (int j = 0; j < TypeResources.values().length; j++) {
+                production.add(0L);
+                consumption.add(0L);
+            }
             for(Module module : modules){
                 Component component = TypeModule.values()[module.getModule_type()].createModule(module);
-                production += component.getProductionInZone(i, modules);
-                consumption += component.getConsumptionInZone(i, modules);
+                component.getProduction(i, modules, production);
+                component.getConsumption(i, modules, consumption);
             }
             zoneProductions.add(new ZoneProduction(i, production, consumption));
         }
@@ -88,46 +93,12 @@ public class UserService {
         return new Statistics(user.getCurrent_day(), successfulService.getSuccessful(idUser).successful(), count, sproduction, sconsumption, zoneProductions);
     }
 
-    /*public List<User> createUser(){
-        return userRepository.findAll();
-    }
-
-    public User create(User user) {
-        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+    public Long create(String name, String email, String password) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isPresent()){
             throw new IllegalStateException("Пользователь уже есть");
         }
-        return userRepository.save(user);
+        User user = new User(null, name, email, password, 0, 0, false);
+        return userRepository.save(user).getId();
     }
-
-    public void delete(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isEmpty()){
-            throw new IllegalStateException("Пользователь с этим id нет");
-        }
-        userRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void update(Long id, String email, String name) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isEmpty()){
-            throw new IllegalStateException("Пользователь с этим id нет");
-        }
-        User user = optionalUser.get();
-        if(email != null && !email.equals(user.getEmail())){
-            Optional<User> optionalUser1 = userRepository.findByEmail(email);
-            if(optionalUser1.isPresent()){
-                throw new IllegalStateException("Пользователь уже есть");
-            }
-            user.setEmail(email);
-        }
-
-        if(name != null && !name.equals(user.getName())){
-            user.setName(name);
-        }
-
-       // userRepository.save(user);
-
-    }*/
 }

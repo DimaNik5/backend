@@ -30,7 +30,7 @@ public class ModuleController {
     }
 
     @PostMapping
-    public Module create(@RequestBody Module module){
+    public Integer create(@RequestBody Module module){
         return moduleService.create(module);
     }
 }

@@ -1,5 +1,7 @@
 package bfg.backend.dto.responce.statistics;
 
+import java.util.List;
+
 public record ZoneProduction(Integer id,
-                             Long production,
-                             Long consumption) {}
+                             List<Long> production,
+                             List<Long> consumption) {}

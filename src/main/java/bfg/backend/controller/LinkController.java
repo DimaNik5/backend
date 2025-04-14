@@ -21,7 +21,7 @@ public class LinkController {
     }
 
     @PostMapping
-    public Link create(@RequestParam Link link){
+    public Integer create(@RequestParam Link link){
         return linkService.create(link);
     }
 }

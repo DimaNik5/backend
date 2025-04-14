@@ -3,12 +3,15 @@ package bfg.backend.service.logic.zones;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class Area {
     private String name;
     private Integer widthSecond;
     private Integer longitudeSecond;
     private Integer illumination;
+    private int[] ways;
     private Cell[][] cells;
 
     Area(int illumination, String file, String name){
@@ -26,6 +29,7 @@ public class Area {
                     cells[i][j] = new Cell(con[j]);
                 }
             }
+            ways = Arrays.stream(br.readLine().split(" ")).flatMapToInt(s -> IntStream.of(Integer.parseInt(s))).toArray();
             widthSecond = cells[0][0].getWidthSecond();
             longitudeSecond = cells[0][0].getLongitudeSecond();
         } catch (IOException e) {
@@ -71,5 +75,13 @@ public class Area {
 
     public void setCells(Cell[][] cells) {
         this.cells = cells;
+    }
+
+    public int[] getWays() {
+        return ways;
+    }
+
+    public void setWays(int[] ways) {
+        this.ways = ways;
     }
 }

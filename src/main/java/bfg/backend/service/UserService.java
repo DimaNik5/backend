@@ -1,14 +1,20 @@
 package bfg.backend.service;
 
 import bfg.backend.dto.responce.allUserInfo.AllUserInfo;
+import bfg.backend.dto.responce.statistics.Statistics;
+import bfg.backend.dto.responce.statistics.ZoneProduction;
 import bfg.backend.mapping.MappingToResponse;
 import bfg.backend.repository.link.*;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.module.ModuleRepository;
 import bfg.backend.repository.resource.*;
 import bfg.backend.repository.user.*;
+import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.zones.Zones;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +25,14 @@ public class UserService {
     private final LinkRepository linkRepository;
     private final ModuleRepository moduleRepository;
     private final ResourceRepository resourceRepository;
+    private final SuccessfulService successfulService;
 
-    public UserService(UserRepository userRepository, LinkRepository linkRepository, ModuleRepository moduleRepository, ResourceRepository resourceRepository) {
+    public UserService(UserRepository userRepository, LinkRepository linkRepository, ModuleRepository moduleRepository, ResourceRepository resourceRepository, SuccessfulService successfulService) {
         this.userRepository = userRepository;
         this.linkRepository = linkRepository;
         this.moduleRepository = moduleRepository;
         this.resourceRepository = resourceRepository;
+        this.successfulService = successfulService;
     }
 
     public AllUserInfo find(String email, String password){
@@ -42,6 +50,42 @@ public class UserService {
         List<Resource> resources = resourceRepository.findByIdUser(user.getId());
 
         return MappingToResponse.mapToAllUserInfo(user, modules, links, resources);
+    }
+
+    public Statistics getStatistics(Long idUser){
+        Optional<User> optionalUser = userRepository.findById(idUser);
+        if(optionalUser.isEmpty()){
+            throw new RuntimeException("Такого пользователя нет");
+        }
+        User user = optionalUser.get();
+
+        List<Module> modules = moduleRepository.findByIdUser(user.getId());
+        List<Resource> resources = resourceRepository.findByIdUser(user.getId());
+        resources.sort(Resource::compareTo);
+
+        List<Long> count = new ArrayList<>(resources.size());
+        List<Long> sproduction = new ArrayList<>(resources.size());
+        List<Long> sconsumption = new ArrayList<>(resources.size());
+        List<ZoneProduction> zoneProductions = new ArrayList<>(Zones.getLength());
+
+        for (Resource resource : resources){
+            count.add(resource.getCount());
+            sproduction.add(resource.getSum_production());
+            sconsumption.add(resource.getSum_consumption());
+        }
+
+        for (int i = 0; i < Zones.getLength(); i++) {
+            Long production = 0L;
+            Long consumption = 0L;
+            for(Module module : modules){
+                Component component = TypeModule.values()[module.getModule_type()].createModule(module);
+                production += component.getProductionInZone(i, modules);
+                consumption += component.getConsumptionInZone(i, modules);
+            }
+            zoneProductions.add(new ZoneProduction(i, production, consumption));
+        }
+
+        return new Statistics(user.getCurrent_day(), successfulService.getSuccessful(idUser).successful(), count, sproduction, sconsumption, zoneProductions);
     }
 
     /*public List<User> createUser(){

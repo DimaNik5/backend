@@ -33,9 +33,12 @@ public class CheckPlaceService {
 
         Optional<User> optionalUser = userRepository.findById(Long.valueOf(modulePlace.idUser()));
         if(optionalUser.isEmpty()){
-            return null;
+            throw new RuntimeException("Такого пользователя нет");
         }
         User user = optionalUser.get();
+        if(!user.getLive()){
+            throw new RuntimeException("Данный пользоваель завершил колнизацию");
+        }
 
         List<Module> modules = moduleRepository.findByIdUser(user.getId());
         List<Link> links = linkRepository.findByIdUser(user.getId());

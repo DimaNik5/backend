@@ -14,14 +14,16 @@ public class User {
     private String password;
     private Integer current_day;
     private Integer days_before_delivery;
+    private Boolean live;
 
-    public User(Long id, String name, String email, String password, Integer current_day, Integer days_before_delivery) {
+    public User(Long id, String name, String email, String password, Integer current_day, Integer days_before_delivery, Boolean live) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.current_day = current_day;
         this.days_before_delivery = days_before_delivery;
+        this.live = live;
     }
 
     public User() {}
@@ -74,5 +76,13 @@ public class User {
 
     public void setDays_before_delivery(Integer days_before_delivery) {
         this.days_before_delivery = days_before_delivery;
+    }
+
+    public Boolean getLive() {
+        return live;
+    }
+
+    public void setLive(Boolean live) {
+        this.live = live;
     }
 }

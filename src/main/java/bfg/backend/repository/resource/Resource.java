@@ -4,16 +4,17 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 
 @Entity
-public class Resource {
+public class Resource implements Comparable<Resource>{
 
     @EmbeddedId
     private PrimaryKey primaryKey;
     private Long count;
     private Long production;
+    private Long consumption;
     private Long sum_production;
     private Long sum_consumption;
 
-    public static class PrimaryKey{
+    public static class PrimaryKey implements Comparable<PrimaryKey>{
         private Integer resource_type;
         private Long id_user;
 
@@ -23,6 +24,11 @@ public class Resource {
         }
 
         public PrimaryKey() {}
+
+        @Override
+        public int compareTo(PrimaryKey o) {
+            return resource_type.compareTo(o.resource_type);
+        }
 
         public Integer getResource_type() {
             return resource_type;
@@ -41,15 +47,21 @@ public class Resource {
         }
     }
 
-    public Resource(PrimaryKey primaryKey, Long count, Long production, Long sum_production, Long sum_consumption) {
+    public Resource(PrimaryKey primaryKey, Long count, Long production, Long consumption, Long sum_production, Long sum_consumption) {
         this.primaryKey = primaryKey;
         this.count = count;
         this.production = production;
+        this.consumption = consumption;
         this.sum_production = sum_production;
         this.sum_consumption = sum_consumption;
     }
 
     public Resource() {}
+
+    @Override
+    public int compareTo(Resource o) {
+        return primaryKey.compareTo(o.primaryKey);
+    }
 
     public PrimaryKey getPrimaryKey() {
         return primaryKey;
@@ -89,5 +101,13 @@ public class Resource {
 
     public void setSum_consumption(Long sum_consumption) {
         this.sum_consumption = sum_consumption;
+    }
+
+    public Long getConsumption() {
+        return consumption;
+    }
+
+    public void setConsumption(Long consumption) {
+        this.consumption = consumption;
     }
 }

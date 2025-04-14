@@ -33,8 +33,13 @@ public class ModuleService {
     }
 
     public void delete(Long idUser, Long id) {
-        if(userRepository.findById(idUser).isEmpty()){
+        Optional<User> optionalUser = userRepository.findById(idUser);
+        if(optionalUser.isEmpty()){
             throw new RuntimeException("Такого пользователя нет");
+        }
+        User user = optionalUser.get();
+        if(!user.getLive()){
+            throw new RuntimeException("Данный пользоваель завершил колнизацию");
         }
         Optional<Module> optionalModule = moduleRepository.findById(id);
         if(optionalModule.isEmpty()){
@@ -52,12 +57,19 @@ public class ModuleService {
     public Module create(Module module) {
         // TODO проверка на возможность поставить?
 
-        if(userRepository.findById(module.getId_user()).isEmpty()){
+        Optional<User> optionalUser = userRepository.findById(module.getId_user());
+        if(optionalUser.isEmpty()){
             throw new RuntimeException("Такого пользователя нет");
         }
+        User user = optionalUser.get();
+        if(!user.getLive()){
+            throw new RuntimeException("Данный пользоваель завершил колнизацию");
+        }
+
         if(moduleRepository.findById(module.getId()).isPresent()){
             throw new RuntimeException("Такой модуль уже есть");
         }
+        // TODO изменение потребления/произвоодства
         return moduleRepository.save(module);
 
     }

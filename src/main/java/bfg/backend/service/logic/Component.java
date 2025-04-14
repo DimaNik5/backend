@@ -10,4 +10,8 @@ public interface Component {
     Integer getRelief();
 
     Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources);
+
+    Long getProductionInZone(int idZone, List<Module> modules);
+
+    Long getConsumptionInZone(int idZone, List<Module> modules);
 }

@@ -7,7 +7,8 @@ CREATE TABLE users(
     email VARCHAR(64) NOT NULL UNIQUE,
     password VARCHAR(16) NOT NULL,
     current_day BIGINT,
-    days_before_delivery INTEGER
+    days_before_delivery INTEGER,
+    live BOOLEAN
 );
 
 --DROP TABLE module CASCADE;
@@ -26,8 +27,9 @@ CREATE TABLE resource(
     id_user BIGINT REFERENCES users(id),
     count BIGINT,
     production BIGINT,
+    consumption BIGINT, -- больше 0
     sum_production BIGINT,
-    sum_consumption BIGINT,
+    sum_consumption BIGINT, -- больше 0
     PRIMARY KEY(resource_type, id_user)
 );
 

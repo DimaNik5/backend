@@ -1,7 +1,6 @@
 import math
 
 import rasterio
-from zone_info.CONFIG import *
 
 
 def correlation(bound, x, y):
@@ -98,9 +97,3 @@ def get_distance(map1: str, map2: str, x1: float, y1: float, x2: float, y2: floa
                 dy = deltaY / (deltaY + deltaX)
                 orderY = 1 if y2 >= curY else -1
         return sum
-
-
-# Пример вызова
-#for i in range(0, len(zones)):
-#    for j in range(i + 1, len(zones)):
-#        print(f"{zones[i][2]} - {zones[j][2]}: {round(get_distance(SCH_PATH_LEFT, SCH_PATH_TOP, zones[i][0], zones[i][1], zones[j][0], zones[j][1]))}")

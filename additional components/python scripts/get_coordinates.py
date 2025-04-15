@@ -1,5 +1,6 @@
 import math
-from zone_info.CONFIG import *
+
+from CONFIG import *
 
 
 def get_coordinates(x: int, y: int):
@@ -43,8 +44,3 @@ def get_coordinates(x: int, y: int):
     resCoordinates[0] = coordinates[0][2] + coordinates[0][1] * 60 + coordinates[0][2] * 3600
     resCoordinates[1] = coordinates[1][2] + coordinates[1][1] * 60 + coordinates[1][2] * 3600
     return resCoordinates # координаты по секундам
-
-
-#for i in range(0, len(zones)):
-#    coord = get_coordinates(zones[i][0], zones[i][1])
-#    print(f"{zones[i][2]}: {zones[i][0]}, {zones[i][1]}; {coord[0][0]}* {coord[0][1]}' {coord[0][2]}\" ш. {coord[1][0]}* {coord[1][1]}' {coord[1][2]}\" д.")

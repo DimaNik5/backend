@@ -1,13 +1,14 @@
-from zone_info.CONFIG import *
-from zone_info.get_height import *
-from zone_info.get_coordinates import *
-from zone_info.get_distance import *
+from CONFIG import *
+from get_height import *
+from get_coordinates import *
+from get_distance import *
 
 if __name__ == "__main__":
     file = open(zones[0][2] + ".txt", "w")
     file.write(f"{zones[0][3]} {zones[0][4]}")
 
     for k in range(6):
+        print(f"Zone: {k}")
         file = open("zones/" + zones[k][2] + ".txt", "w")
         w, h = zones[k][3], zones[k][4]
         file.write(f"{w} {h}\n")

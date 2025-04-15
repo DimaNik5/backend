@@ -9,11 +9,11 @@ public class Zones {
 
     static {
         areas = new ArrayList<>(LENGTH);
-        String[] names = {"Равнина1","Равнина2","Высота1","Высота2","Низина1","Низина2"};
+        String[] names = {"Равнина 1","Равнина 2","Высота 1","Высота 2","Низина 1","Низина 2"};
         int[] il = {40, 40, 95, 95, 0, 0};
-        String path = System.getProperty("user.dir");
+        String path = System.getProperty("user.dir") + "/src/main/resources/zones/";
         for (int i = 0; i < LENGTH; i++) {
-            areas.add(new Area(il[i], path + "/" + names[i] + ".txt", names[i]));
+            areas.add(new Area(il[i], path + names[i] + ".txt", names[i]));
         }
     }
 

@@ -1,5 +1,6 @@
 package bfg.backend.service;
 
+import bfg.backend.dto.request.modulePlace.ModulePlace;
 import bfg.backend.dto.responce.optimality.Optimality;
 import bfg.backend.repository.link.Link;
 import bfg.backend.repository.link.LinkRepository;
@@ -27,13 +28,15 @@ public class ModuleService {
     private final ResourceRepository resourceRepository;
 
     private final ProductionService productionService;
+    private final CheckPlaceService checkPlaceService;
 
-    public ModuleService(ModuleRepository moduleRepository, UserRepository userRepository, LinkRepository linkRepository, ResourceRepository resourceRepository, ProductionService productionService) {
+    public ModuleService(ModuleRepository moduleRepository, UserRepository userRepository, LinkRepository linkRepository, ResourceRepository resourceRepository, ProductionService productionService, CheckPlaceService checkPlaceService) {
         this.moduleRepository = moduleRepository;
         this.userRepository = userRepository;
         this.linkRepository = linkRepository;
         this.resourceRepository = resourceRepository;
         this.productionService = productionService;
+        this.checkPlaceService = checkPlaceService;
     }
 
     public void delete(Long idUser, Long id) {
@@ -60,7 +63,10 @@ public class ModuleService {
     }
 
     public Integer create(Module module) {
-        // TODO проверка на возможность поставить?
+        if(!checkPlaceService.check(new ModulePlace(module.getId_user(), module.getModule_type(),
+                module.getX(), module.getY(), module.getId_zone())).possible()){
+            throw new RuntimeException("Нельзя поставить в этом месте");
+        }
 
         Optional<User> optionalUser = userRepository.findById(module.getId_user());
         if(optionalUser.isEmpty()){
@@ -70,10 +76,10 @@ public class ModuleService {
         if(!user.getLive()){
             throw new RuntimeException("Данный пользоваель завершил колнизацию");
         }
-
+/*
         if(moduleRepository.findById(module.getId()).isPresent()){
             throw new RuntimeException("Такой модуль уже есть");
-        }
+        }*/
         moduleRepository.save(module);
 
         productionService.recountingProduction(module.getId_user(), moduleRepository, linkRepository, resourceRepository);

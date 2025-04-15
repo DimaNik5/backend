@@ -1,5 +1,6 @@
 package bfg.backend.service;
 
+import bfg.backend.dto.request.user.UserIn;
 import bfg.backend.dto.responce.allUserInfo.AllUserInfo;
 import bfg.backend.dto.responce.statistics.Statistics;
 import bfg.backend.dto.responce.statistics.ZoneProduction;
@@ -36,13 +37,13 @@ public class UserService {
         this.successfulService = successfulService;
     }
 
-    public AllUserInfo find(String email, String password){
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+    public AllUserInfo find(UserIn userIn){
+        Optional<User> optionalUser = userRepository.findByEmail(userIn.email());
         if(optionalUser.isEmpty()){
             return null;
         }
         User user = optionalUser.get();
-        if(!user.getPassword().equals(password)){
+        if(!user.getPassword().equals(userIn.password())){
             return null;
         }
 
@@ -93,12 +94,12 @@ public class UserService {
         return new Statistics(user.getCurrent_day(), successfulService.getSuccessful(idUser).successful(), count, sproduction, sconsumption, zoneProductions);
     }
 
-    public Long create(String name, String email, String password) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+    public Long create(UserIn userIn) {
+        Optional<User> optionalUser = userRepository.findByEmail(userIn.email());
         if(optionalUser.isPresent()){
             throw new IllegalStateException("Пользователь уже есть");
         }
-        User user = new User(null, name, email, password, 0, 0, false);
+        User user = new User(null, userIn.name(), userIn.email(), userIn.password(), 0, 0, false);
         return userRepository.save(user).getId();
     }
 }

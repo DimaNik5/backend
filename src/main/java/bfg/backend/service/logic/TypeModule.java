@@ -37,7 +37,7 @@ public enum TypeModule {
 
     private interface Constructor{Component create(Module module);};
     private final Constructor constructor;
-    // Todo убрать название
+
     TypeModule(int people, int cost, boolean live, Constructor c){
         this.live = live;
         this.people = people;

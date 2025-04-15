@@ -1,5 +1,6 @@
 package bfg.backend.controller;
 
+import bfg.backend.dto.request.user.UserIn;
 import bfg.backend.dto.responce.allUserInfo.AllUserInfo;
 import bfg.backend.dto.responce.statistics.Statistics;
 import bfg.backend.service.UserService;
@@ -21,13 +22,8 @@ public class UserController {
     }
 
     @PostMapping
-    public AllUserInfo find(@RequestBody String email, @RequestBody String password){
-        return userService.find(email, password);
-    }
-
-    @PostMapping
-    public Long create(@RequestBody String name, @RequestBody String email, @RequestBody String password){
-        return userService.create(name, email, password);
+    public AllUserInfo find(@RequestBody UserIn user){
+        return userService.find(user);
     }
 
 }

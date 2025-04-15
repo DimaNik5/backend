@@ -3,7 +3,6 @@ package bfg.backend.controller;
 import bfg.backend.dto.responce.optimality.Optimality;
 import bfg.backend.repository.module.Module;
 import bfg.backend.service.ModuleService;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

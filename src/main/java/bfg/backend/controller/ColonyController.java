@@ -20,7 +20,7 @@ public class ColonyController {
     }
 
     @PostMapping
-    public AllUserInfo create(@RequestParam Long idUser){
+    public AllUserInfo create(@RequestBody Long idUser){
         return colonyService.create(idUser);
     }
 

@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static bfg.backend.service.logic.Constants.DAYS_DELIVERY;
+import static bfg.backend.service.logic.Constants.MASS;
+
 @Service
 public class SuccessfulService {
 
@@ -48,16 +51,12 @@ public class SuccessfulService {
         int central = 0;
         int search = 0;
 
-        // TODO constant
-        int daysDelivery = 30;
-        int massa = 10000;
-
         long sumDiff = 0L;
         for(Resource resource : resources){
             long diff = resource.getProduction() - resource.getConsumption();
             if(diff < 0) sumDiff -= diff;
         }
-        statResources = Math.toIntExact(100 - (sumDiff * daysDelivery) / massa * 100);
+        statResources = Math.toIntExact(100 - (sumDiff * DAYS_DELIVERY) / MASS * 100);
 
         int countA = 0;
         int pSearch = 0;
@@ -105,6 +104,8 @@ public class SuccessfulService {
             }
             needCountPeople += TypeModule.values()[module.getModule_type()].getPeople();
         }
+        //todo ппродумать
+        if(countPeople == 0) countPeople=1;
         mood = (int) (Math.min((countM + countS) * 3 * 8 / countPeople * 25, 50) +
                         (statResources +
                         Math.min(resources.get(TypeResources.FOOD.ordinal()).getProduction() /

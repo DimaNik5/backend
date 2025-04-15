@@ -31,7 +31,7 @@ public class CheckPlaceService {
 
     public CheckedPlace check(ModulePlace modulePlace){
 
-        Optional<User> optionalUser = userRepository.findById(Long.valueOf(modulePlace.idUser()));
+        Optional<User> optionalUser = userRepository.findById(modulePlace.idUser());
         if(optionalUser.isEmpty()){
             throw new RuntimeException("Такого пользователя нет");
         }

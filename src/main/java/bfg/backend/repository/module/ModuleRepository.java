@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ModuleRepository extends JpaRepository<Module, Long> {
-    @Query(value = "select * from users where id_user = :id_user", nativeQuery = true)
+    @Query(value = "select * from module where id_user = :id_user", nativeQuery = true)
     List<Module> findByIdUser(Long id_user);
 }

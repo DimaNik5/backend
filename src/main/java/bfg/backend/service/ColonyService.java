@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static bfg.backend.service.logic.Constants.DAYS_DELIVERY;
+
 @Service
 public class ColonyService {
 
@@ -61,12 +63,9 @@ public class ColonyService {
             throw new RuntimeException("У пользователя уже есть колония");
         }
 
-        // TODO constant
-        Integer daysDelivery = 30;
-
         user.setLive(true);
         user.setCurrent_day(0);
-        user.setDays_before_delivery(daysDelivery);
+        user.setDays_before_delivery(DAYS_DELIVERY);
 
         List<Resource> resources = new ArrayList<>();
         for (int i = 0; i < TypeResources.values().length; i++) {

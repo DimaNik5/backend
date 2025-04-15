@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static bfg.backend.service.logic.Constants.DAYS_DELIVERY;
+
 @Service
 public class DayService {
 
@@ -34,12 +36,9 @@ public class DayService {
             throw new RuntimeException("Данный пользоваель завершил колнизацию");
         }
 
-        // TODO constant
-        Integer daysDelivery = 30;
-
-        user.setCurrent_day(user.getCurrent_day() - 1);
+        user.setCurrent_day(user.getCurrent_day() + 1);
         boolean delivery = user.getDays_before_delivery() == 1;
-        if(delivery) user.setDays_before_delivery(daysDelivery);
+        if(delivery) user.setDays_before_delivery(DAYS_DELIVERY);
         else user.setDays_before_delivery(user.getDays_before_delivery() - 1);
 
         List<Resource> resources = resourceRepository.findByIdUser(idUser);
@@ -49,7 +48,7 @@ public class DayService {
         for (Resource resource : resources) {
             diff = resource.getProduction() - resource.getConsumption();
             if (delivery && diff < 0) {
-                diff -= diff * daysDelivery + (resource.getCount() + diff * 5);
+                diff -= diff * DAYS_DELIVERY + (resource.getCount() + diff * 5);
             }
             diffResources.add(diff);
             resource.setCount(resource.getCount() + diff);

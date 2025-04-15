@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface LinkRepository extends JpaRepository<Link, Link.PrimaryKey> {
-    @Query(value = "select * from users where id_user = :id_user", nativeQuery = true)
+    @Query(value = "select * from link where id_user = :id_user", nativeQuery = true)
     List<Link> findByIdUser(Long id_user);
 }

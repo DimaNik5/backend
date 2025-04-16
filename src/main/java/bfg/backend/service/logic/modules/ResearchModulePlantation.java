@@ -4,10 +4,14 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
 
 public class ResearchModulePlantation extends Module implements Component {
+    private final static int h = 1;
+    private final static int w = 1;
+    private final static double MAX_ANGLE = 10;
 
     public ResearchModulePlantation(Module module) {
         super(module.getId(), module.getId_user(), module.getId_zone(),
@@ -20,7 +24,21 @@ public class ResearchModulePlantation extends Module implements Component {
 
     @Override
     public Integer getRelief() {
-        return 0;
+        int x = getX();
+        int y = getY();
+        double maxAngle = 0;
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                try {
+                    maxAngle = Math.max(maxAngle, Zones.getZones().get(getId_zone()).getCells()[y + i][x + j].getAngle());
+                }catch (ArrayIndexOutOfBoundsException e){
+                    return null;
+                }
+            }
+        }
+        int res = (int) ((MAX_ANGLE - maxAngle) * 10);
+        if(res <= 0) return null;
+        return res;
     }
 
     @Override

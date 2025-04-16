@@ -1,14 +1,14 @@
 package bfg.backend.service.logic;
 
 public enum TypeResources {
-    H2O(10),
-    FUEL(1),
-    FOOD(1),
-    WT(1),
-    O2(1),
-    CO2(1),
-    GARBAGE(1),
-    MATERIAL(1);
+    H2O(600),
+    FUEL(0),
+    FOOD(450),
+    WT(0),
+    O2(0),
+    CO2(0),
+    GARBAGE(0),
+    MATERIAL(250000);
 
     private final long startCount;
 

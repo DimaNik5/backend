@@ -55,4 +55,10 @@ public class ManufacturingEnterprise extends Module implements Component {
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
 
     }
+
+    @Override
+    public boolean cross(int x, int y, int w, int h) {
+        return (x >= getX() && x <= getX() + ManufacturingEnterprise.w && y >= getY() && y <= getY() + ManufacturingEnterprise.h) ||
+                (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
 }

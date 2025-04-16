@@ -55,4 +55,10 @@ public class ResearchModuleTelescope extends Module implements Component {
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
 
     }
+
+    @Override
+    public boolean cross(int x, int y, int w, int h) {
+        return (x >= getX() && x <= getX() + ResearchModuleTelescope.w && y >= getY() && y <= getY() + ResearchModuleTelescope.h) ||
+                (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
 }

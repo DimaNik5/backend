@@ -55,4 +55,10 @@ public class Plantation extends Module implements Component {
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
 
     }
+
+    @Override
+    public boolean cross(int x, int y, int w, int h) {
+        return (x >= getX() && x <= getX() + Plantation.w && y >= getY() && y <= getY() + Plantation.h) ||
+                (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
 }

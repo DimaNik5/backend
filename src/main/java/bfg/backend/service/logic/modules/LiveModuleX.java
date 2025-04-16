@@ -55,4 +55,10 @@ public class LiveModuleX extends Module implements Component {
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
 
     }
+
+    @Override
+    public boolean cross(int x, int y, int w, int h) {
+        return (x >= getX() && x <= getX() + LiveModuleX.w && y >= getY() && y <= getY() + LiveModuleX.h) ||
+                (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
 }

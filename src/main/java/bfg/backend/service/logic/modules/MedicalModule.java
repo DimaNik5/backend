@@ -4,9 +4,12 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MedicalModule extends Module implements Component {
     private final static int h = 1;
@@ -43,7 +46,32 @@ public class MedicalModule extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
-        return 0;
+        boolean connect = false;
+        int countLive = 0;
+        int countMed = 0;
+        for(Module module : modules){
+            if(Objects.equals(module.getId_zone(), getId_zone())){
+                Component c = TypeModule.values()[module.getModule_type()].createModule(module);
+                if(c.cross(getX(), getY(), w, h)){
+                    return null;
+                }
+                if(!connect && TypeModule.values()[module.getModule_type()].isLive()){
+                    connect = c.cross(getX() + 1, getY(), w, h) || c.cross(getX() - 1, getY(), w, h) ||
+                            c.cross(getX(), getY() + 1, w, h) || c.cross(getX(), getY() - 1, w, h);
+                }
+                if (module.getModule_type() == TypeModule.MEDICAL_MODULE.ordinal()) {
+                    countMed++;
+                } else if (module.getModule_type() == TypeModule.LIVE_MODULE_X.ordinal() ||
+                            module.getModule_type() == TypeModule.LIVE_MODULE_Y.ordinal()){
+                    countLive++;
+                }
+            }
+        }
+        if(connect){
+            countMed *= 3;
+            return Math.min(100, 100 - (countMed - countLive) / countMed * 100);
+        }
+        return null;
     }
 
     @Override
@@ -53,7 +81,7 @@ public class MedicalModule extends Module implements Component {
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-
+        consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 7000L);
     }
 
     @Override

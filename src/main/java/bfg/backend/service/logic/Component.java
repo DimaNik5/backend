@@ -10,6 +10,7 @@ public interface Component {
 
     Integer getRelief();
 
+    // TODO сделать проверку что проверяемый модеуль есть текущий
     Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources);
 
     void getProduction(int idZone, List<Module> modules, List<Long> production);

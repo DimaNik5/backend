@@ -54,6 +54,7 @@ public class UserService {
         return MappingToResponse.mapToAllUserInfo(user, modules, links, resources);
     }
 
+    // TODO потребление электричества за гидролиз кислорода
     public Statistics getStatistics(Long idUser){
         Optional<User> optionalUser = userRepository.findById(idUser);
         if(optionalUser.isEmpty()){

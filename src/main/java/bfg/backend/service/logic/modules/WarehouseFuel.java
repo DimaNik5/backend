@@ -4,9 +4,14 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
+import java.util.Objects;
+
+import static bfg.backend.service.logic.Constants.CAPACITY;
 
 public class WarehouseFuel extends Module implements Component {
     private final static int h = 2;
@@ -43,7 +48,27 @@ public class WarehouseFuel extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
-        return 0;
+        boolean admin = false;
+        int count = 1;
+        for (Module module : modules){
+
+            if(Objects.equals(module.getId_zone(), getId_zone())){
+                Component c = TypeModule.values()[module.getModule_type()].createModule(module);
+                if(c.cross(getX(), getY(), w, h)){
+                    return null;
+                }
+                if(module.getModule_type() == TypeModule.ADMINISTRATIVE_MODULE.ordinal() ||
+                        module.getModule_type() == TypeModule.LIVE_ADMINISTRATIVE_MODULE.ordinal()){
+                    admin = true;
+                }
+            }
+            if(Objects.equals(module.getModule_type(), getModule_type())){
+                count++;
+            }
+        }
+        long cur = resources.get(TypeResources.FUEL.ordinal()).getCount();
+        if(admin) return Math.toIntExact(Math.min(100, 100 - cur / ((long) count * CAPACITY) * 100));
+        return null;
     }
 
     @Override
@@ -53,6 +78,7 @@ public class WarehouseFuel extends Module implements Component {
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
+        consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 4800L);
 
     }
 

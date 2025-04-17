@@ -82,6 +82,9 @@ public class Landfill extends Module implements Component {
             if (module.getModule_type() == TypeModule.REPAIR_MODULE.ordinal()) {
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 List<Long> t = new ArrayList<>(production.size());
+                for (int i = 0; i < production.size(); i++) {
+                    t.add(0L);
+                }
                 c.getConsumption(idZone, modules, t);
                 count += t.get(TypeResources.MATERIAL.ordinal());
             }

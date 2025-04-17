@@ -14,8 +14,8 @@ public class ColonyController {
         this.colonyService = colonyService;
     }
 
-    @DeleteMapping
-    public void delete(@RequestParam Long idUser){
+    @DeleteMapping(path = "{idUser}")
+    public void delete(@PathVariable Long idUser){
         colonyService.delete(idUser);
     }
 

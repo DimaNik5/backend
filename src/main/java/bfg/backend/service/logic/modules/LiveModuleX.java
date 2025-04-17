@@ -4,9 +4,12 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
+import java.util.Objects;
 
 public class LiveModuleX extends Module implements Component {
     private final static int h = 1;
@@ -43,17 +46,36 @@ public class LiveModuleX extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
-        return 0;
+        boolean connect = false;
+        for(Module module : modules){
+            if(Objects.equals(module.getId_zone(), getId_zone())){
+                Component c = TypeModule.values()[module.getModule_type()].createModule(module);
+                if(c.cross(getX(), getY(), w, h)){
+                    return null;
+                }
+                if(!connect && TypeModule.values()[module.getModule_type()].isLive()){
+                    connect = c.cross(getX() + 1, getY(), w, h) || c.cross(getX() - 1, getY(), w, h) ||
+                            c.cross(getX(), getY() + 1, w, h) || c.cross(getX(), getY() - 1, w, h);
+                }
+            }
+        }
+        if(connect){
+            return 100;
+        }
+        return null;
     }
 
     @Override
     public void getProduction(int idZone, List<Module> modules, List<Long> production) {
-
+        production.set(TypeResources.CO2.ordinal(), production.get(TypeResources.CO2.ordinal()) + 8L);
     }
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-
+        consumption.set(TypeResources.O2.ordinal(), consumption.get(TypeResources.O2.ordinal()) + (long) (0.7 * 8));
+        consumption.set(TypeResources.FOOD.ordinal(), consumption.get(TypeResources.FOOD.ordinal()) + (long) (1.72 * 8));
+        consumption.set(TypeResources.H2O.ordinal(), consumption.get(TypeResources.H2O.ordinal()) + (long) (1.7 * 8));
+        consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 80L + 15400L);
     }
 
     @Override

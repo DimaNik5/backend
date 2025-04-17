@@ -4,9 +4,14 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
+import bfg.backend.service.logic.TypeResources;
 import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
+import java.util.Objects;
+
+import static bfg.backend.service.logic.Constants.ILLUMINATION;
 
 public class CommunicationTower extends Module implements Component {
     private final static int h = 1;
@@ -43,17 +48,39 @@ public class CommunicationTower extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
-        return 0;
+        int totalRac = 0;
+        for (Module value : modules) {
+            if (Objects.equals(value.getModule_type(), getModule_type())) {
+                totalRac += ILLUMINATION[value.getId_zone()];
+                if (totalRac >= 100) {
+                    return null;
+                }
+            }
+        }
+
+        boolean admin = false;
+        for (Module module : modules){
+            if(Objects.equals(module.getId_zone(), getId_zone())){
+                Component c = TypeModule.values()[module.getModule_type()].createModule(module);
+                if(c.cross(getX(), getY(), w, h)){
+                    return null;
+                }
+                if(module.getModule_type() == TypeModule.ADMINISTRATIVE_MODULE.ordinal() ||
+                module.getModule_type() == TypeModule.LIVE_ADMINISTRATIVE_MODULE.ordinal()){
+                    admin = true;
+                }
+            }
+        }
+        if(admin) return Math.min(100 - totalRac, ILLUMINATION[getId_zone()]);
+        return null;
     }
 
     @Override
-    public void getProduction(int idZone, List<Module> modules, List<Long> production) {
-
-    }
+    public void getProduction(int idZone, List<Module> modules, List<Long> production) {}
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-
+        consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 16200L);
     }
 
     @Override

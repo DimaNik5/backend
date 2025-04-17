@@ -84,7 +84,7 @@ public class LiveAdministrativeModule extends Module implements Component {
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-        consumption.set(TypeResources.WT.ordinal(), 36800L);
+        consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 36800L);
     }
 
     @Override

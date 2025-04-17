@@ -4,9 +4,11 @@ import bfg.backend.repository.link.Link;
 import bfg.backend.repository.module.Module;
 import bfg.backend.repository.resource.Resource;
 import bfg.backend.service.logic.Component;
+import bfg.backend.service.logic.TypeModule;
 import bfg.backend.service.logic.zones.Zones;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Cosmodrome extends Module implements Component {
     private final static int h = 6;
@@ -43,7 +45,24 @@ public class Cosmodrome extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
-        return 0;
+        for (Module value : modules) {
+            if (Objects.equals(value.getModule_type(), getModule_type())) {
+                return null;
+            }
+        }
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        int count4 = 0;
+        for (Module module : modules) {
+            switch (TypeModule.values()[module.getModule_type()]) {
+                case WAREHOUSE_FOOD -> count1 = 1;
+                case WAREHOUSE_FUEL -> count2 = 1;
+                case WAREHOUSE_GASES -> count3 = 1;
+                case WAREHOUSE_MATERIAL -> count4 = 1;
+            }
+        }
+        return 20 + 20 * (count1 + count2 + count3 + count4);
     }
 
     @Override

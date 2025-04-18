@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class Landfill extends Module implements Component {
     private final static int h = 2;
     private final static int w = 2;
@@ -50,6 +53,7 @@ public class Landfill extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
+        if(!enoughPeople(modules, getId())) return null;
         boolean admin = false;
         int src = 0, other = 50;
         for (Module module : modules){
@@ -60,9 +64,16 @@ public class Landfill extends Module implements Component {
             }
 
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(module.getModule_type() == TypeModule.ADMINISTRATIVE_MODULE.ordinal() ||
                         module.getModule_type() == TypeModule.LIVE_ADMINISTRATIVE_MODULE.ordinal()){
@@ -91,18 +102,23 @@ public class Landfill extends Module implements Component {
         }
         mass = count;
 
-        production.set(TypeResources.MATERIAL.ordinal(), production.get(TypeResources.MATERIAL.ordinal()) + (long) Math.ceil(count * 0.8));
-        production.set(TypeResources.GARBAGE.ordinal(), production.get(TypeResources.MATERIAL.ordinal()) + (long) Math.floor(count * 0.2));
+        production.set(TypeResources.MATERIAL.ordinal(), production.get(TypeResources.MATERIAL.ordinal()) + count * 800 / 1000);
+        production.set(TypeResources.GARBAGE.ordinal(), production.get(TypeResources.MATERIAL.ordinal()) + count * 200 / 1000);
     }
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-        consumption.set(TypeResources.WT.ordinal(),consumption.get(TypeResources.WT.ordinal()) +  mass * 1000);
+        consumption.set(TypeResources.WT.ordinal(),consumption.get(TypeResources.WT.ordinal()) +  mass * 2000);
     }
 
     @Override
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + Landfill.w && y >= getY() && y <= getY() + Landfill.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return (h + w) / 4;
     }
 }

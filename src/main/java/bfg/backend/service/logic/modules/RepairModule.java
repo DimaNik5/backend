@@ -51,6 +51,7 @@ public class RepairModule extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
+        if(!enoughPeople(modules, getId())) return null;
         boolean admin = false;
         boolean cur = false;
 
@@ -75,6 +76,12 @@ public class RepairModule extends Module implements Component {
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(module.getModule_type() == TypeModule.ADMINISTRATIVE_MODULE.ordinal() ||
                         module.getModule_type() == TypeModule.LIVE_ADMINISTRATIVE_MODULE.ordinal()){
@@ -154,12 +161,17 @@ public class RepairModule extends Module implements Component {
         }
 
         consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 4800L + 2000L * count);
-        consumption.set(TypeResources.MATERIAL.ordinal(), (long) (consumption.get(TypeResources.MATERIAL.ordinal()) + CON_MATERIAL_BY_REPAIRED * count));
+        consumption.set(TypeResources.MATERIAL.ordinal(), (long) (consumption.get(TypeResources.MATERIAL.ordinal()) + CON_MATERIAL_BY_REPAIRED * count * 1000));
     }
 
     @Override
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + RepairModule.w && y >= getY() && y <= getY() + RepairModule.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return (h + w) / 4;
     }
 }

@@ -67,7 +67,7 @@ public class SuccessfulService {
         int countS = 0;
 
         countPeople = Math.toIntExact(modules.stream().filter(e -> e.getModule_type() == TypeModule.LIVE_MODULE_Y.ordinal() ||
-                e.getModule_type() == TypeModule.LIVE_MODULE_Y.ordinal()).count()) * 8;
+                e.getModule_type() == TypeModule.LIVE_MODULE_X.ordinal()).count()) * 8;
 
         for (Module module : modules){
             switch (TypeModule.values()[module.getModule_type()]){
@@ -104,12 +104,13 @@ public class SuccessfulService {
             }
             needCountPeople += TypeModule.values()[module.getModule_type()].getPeople();
         }
-        //todo ппродумать
-        if(countPeople == 0) countPeople=1;
-        mood = (int) (Math.min((countM + countS) * 3 * 8 / countPeople * 25, 50) +
-                        (statResources +
-                        Math.min(resources.get(TypeResources.FOOD.ordinal()).getProduction() /
-                                (resources.get(TypeResources.FOOD.ordinal()).getConsumption() * 0.3), 100)) / 4);
+
+        if(countPeople != 0) {
+            mood = (int) (Math.min((countM + countS) * 3 * 8 / countPeople * 25, 50) +
+                    (statResources +
+                            Math.min(resources.get(TypeResources.FOOD.ordinal()).getProduction() /
+                                    (resources.get(TypeResources.FOOD.ordinal()).getConsumption() * 0.3), 100)) / 4);
+        }
         central = Math.min(countA / Zones.getLength() * 100, 100);
         search = Math.min((pSearch + mSearch + lSearch + aSearch) * 25, 100);
         successful = (int) (mood * 0.19 + (100 - Math.max(needCountPeople - countPeople, 0) * 15) * 0.21 + statResources * 0.21 +

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static bfg.backend.service.logic.Constants.DAYS_DELIVERY;
+import static bfg.backend.service.logic.Constants.*;
 
 @Service
 public class DayService {
@@ -43,6 +43,15 @@ public class DayService {
 
         List<Resource> resources = resourceRepository.findByIdUser(idUser);
         resources.sort(Resource::compareTo);
+
+        // Проверка на достаток кислорода
+        long d = resources.get(TypeResources.O2.ordinal()).getConsumption() - resources.get(TypeResources.O2.ordinal()).getProduction();
+        if(d > 0){
+            resources.get(TypeResources.WT.ordinal()).setConsumption(d * WT_FOR_KG_O2 / 1000 + resources.get(TypeResources.WT.ordinal()).getConsumption());
+            resources.get(TypeResources.H2O.ordinal()).setConsumption((long) (d * H2O_FOR_KG_O2) + resources.get(TypeResources.H2O.ordinal()).getConsumption());
+            resources.get(TypeResources.O2.ordinal()).setProduction(d + resources.get(TypeResources.O2.ordinal()).getProduction());
+        }
+
         List<Long> diffResources = new ArrayList<>(resources.size());
         Long diff;
         for (Resource resource : resources) {
@@ -56,7 +65,7 @@ public class DayService {
             resource.setSum_consumption(resource.getSum_consumption() + resource.getConsumption());
         }
 
-        Boolean live = resources.stream().allMatch(e -> e.getCount() > 0);
+        Boolean live = resources.stream().allMatch(e -> e.getCount() >= 0);
         resourceRepository.saveAll(resources);
         user.setLive(live);
         userRepository.save(user);

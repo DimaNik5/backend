@@ -10,19 +10,34 @@ public interface Component {
 
     Integer getRelief();
 
-    // TODO сделать проверку что проверяемый модеуль есть текущий
     Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources);
 
     void getProduction(int idZone, List<Module> modules, List<Long> production);
 
     void getConsumption(int idZone, List<Module> modules, List<Long> consumption);
 
-    private int countPeople(List<Module> modules){
-        return Math.toIntExact(modules.stream().filter(e -> e.getModule_type() == TypeModule.LIVE_MODULE_Y.ordinal() ||
-                e.getModule_type() == TypeModule.LIVE_MODULE_X.ordinal()).count());
+    default boolean enoughPeople(List<Module> modules, long id){
+        modules.sort(Module::compareTo);
+        int countPeople = 0;
+        int needPeople = 0;
+        boolean cur = false;
+        for(Module module : modules){
+            if(module.getModule_type() == TypeModule.LIVE_MODULE_Y.ordinal() ||
+                module.getModule_type() == TypeModule.LIVE_MODULE_X.ordinal()){
+                countPeople += 8;
+                continue;
+            }
+            if(!cur){
+                needPeople += TypeModule.values()[module.getModule_type()].getPeople();
+            }
+            if(module.getId() == id) cur = true;
+        }
+        return countPeople >= needPeople;
     }
 
     boolean cross(int x, int y, int w, int h);
+
+    int getRadius();
 
     // для проверки связанности областей
     class UnionFind {

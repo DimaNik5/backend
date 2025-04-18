@@ -11,6 +11,9 @@ import bfg.backend.service.logic.zones.Zones;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class SportModule extends Module implements Component {
     private final static int h = 1;
     private final static int w = 1;
@@ -48,14 +51,22 @@ public class SportModule extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
+        if(!enoughPeople(modules, getId())) return null;
         boolean connect = false;
         int countLive = 0;
-        int countSport = 0;
+        int countSport = 1;
         for(Module module : modules){
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(!connect && TypeModule.values()[module.getModule_type()].isLive()){
                     connect = c.cross(getX() + 1, getY(), w, h) || c.cross(getX() - 1, getY(), w, h) ||
@@ -96,5 +107,10 @@ public class SportModule extends Module implements Component {
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + SportModule.w && y >= getY() && y <= getY() + SportModule.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return 0;
     }
 }

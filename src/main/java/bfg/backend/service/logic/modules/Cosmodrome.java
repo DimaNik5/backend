@@ -47,6 +47,7 @@ public class Cosmodrome extends Module implements Component {
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
         for (Module value : modules) {
             if (Objects.equals(value.getModule_type(), getModule_type())) {
+                if(Objects.equals(value.getId(), getId())) continue;
                 return null;
             }
         }
@@ -79,5 +80,10 @@ public class Cosmodrome extends Module implements Component {
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + Cosmodrome.w && y >= getY() && y <= getY() + Cosmodrome.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return 0;
     }
 }

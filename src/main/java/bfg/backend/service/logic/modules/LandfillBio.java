@@ -11,6 +11,9 @@ import bfg.backend.service.logic.zones.Zones;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class LandfillBio extends Module implements Component {
     private final static int h = 2;
     private final static int w = 2;
@@ -48,6 +51,7 @@ public class LandfillBio extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
+        if(!enoughPeople(modules, getId())) return null;
         boolean admin = false;
         int src = 0, other = 50;
         for (Module module : modules){
@@ -59,9 +63,16 @@ public class LandfillBio extends Module implements Component {
             }
 
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(module.getModule_type() == TypeModule.ADMINISTRATIVE_MODULE.ordinal() ||
                         module.getModule_type() == TypeModule.LIVE_ADMINISTRATIVE_MODULE.ordinal()){
@@ -83,20 +94,25 @@ public class LandfillBio extends Module implements Component {
             }
         }
         mass = (long) count;
-        production.set(TypeResources.CO2.ordinal(), production.get(TypeResources.CO2.ordinal()) + (long) (mass * 1.73));
-        production.set(TypeResources.H2O.ordinal(), production.get(TypeResources.H2O.ordinal()) + (long) (mass * 0.56));
-        production.set(TypeResources.GARBAGE.ordinal(), production.get(TypeResources.GARBAGE.ordinal()) + (long) (mass * 0.03));
+        production.set(TypeResources.CO2.ordinal(), production.get(TypeResources.CO2.ordinal()) + mass * 1730);
+        production.set(TypeResources.H2O.ordinal(), production.get(TypeResources.H2O.ordinal()) + mass * 560);
+        production.set(TypeResources.GARBAGE.ordinal(), production.get(TypeResources.GARBAGE.ordinal()) + mass * 30);
     }
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
         consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + mass * 3);
-        consumption.set(TypeResources.O2.ordinal(), consumption.get(TypeResources.O2.ordinal()) + (long) (mass * 1.32));
+        consumption.set(TypeResources.O2.ordinal(), consumption.get(TypeResources.O2.ordinal()) + mass * 1320);
     }
 
     @Override
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + LandfillBio.w && y >= getY() && y <= getY() + LandfillBio.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return (h + w) / 4;
     }
 }

@@ -11,6 +11,9 @@ import bfg.backend.service.logic.zones.Zones;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class LiveAdministrativeModule extends Module implements Component {
     private final static int h = 2;
     private final static int w = 2;
@@ -60,9 +63,16 @@ public class LiveAdministrativeModule extends Module implements Component {
 
         for (Module module : modules){
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
             }
         }
@@ -91,5 +101,10 @@ public class LiveAdministrativeModule extends Module implements Component {
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + LiveAdministrativeModule.w && y >= getY() && y <= getY() + LiveAdministrativeModule.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return 0;
     }
 }

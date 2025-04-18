@@ -11,6 +11,9 @@ import bfg.backend.service.logic.zones.Zones;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class LiveModuleX extends Module implements Component {
     private final static int h = 1;
     private final static int w = 2;
@@ -49,9 +52,16 @@ public class LiveModuleX extends Module implements Component {
         boolean connect = false;
         for(Module module : modules){
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(!connect && TypeModule.values()[module.getModule_type()].isLive()){
                     connect = c.cross(getX() + 1, getY(), w, h) || c.cross(getX() - 1, getY(), w, h) ||
@@ -72,9 +82,9 @@ public class LiveModuleX extends Module implements Component {
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-        consumption.set(TypeResources.O2.ordinal(), consumption.get(TypeResources.O2.ordinal()) + (long) (0.7 * 8));
-        consumption.set(TypeResources.FOOD.ordinal(), consumption.get(TypeResources.FOOD.ordinal()) + (long) (1.72 * 8));
-        consumption.set(TypeResources.H2O.ordinal(), consumption.get(TypeResources.H2O.ordinal()) + (long) (1.7 * 8));
+        consumption.set(TypeResources.O2.ordinal(), consumption.get(TypeResources.O2.ordinal()) + 700 * 8);
+        consumption.set(TypeResources.FOOD.ordinal(), consumption.get(TypeResources.FOOD.ordinal()) + 1720 * 8);
+        consumption.set(TypeResources.H2O.ordinal(), consumption.get(TypeResources.H2O.ordinal()) + 1700 * 8);
         consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 80L + 15400L);
     }
 
@@ -82,5 +92,10 @@ public class LiveModuleX extends Module implements Component {
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + LiveModuleX.w && y >= getY() && y <= getY() + LiveModuleX.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return 0;
     }
 }

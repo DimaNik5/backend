@@ -11,6 +11,9 @@ import bfg.backend.service.logic.zones.Zones;
 import java.util.List;
 import java.util.Objects;
 
+import static bfg.backend.service.logic.Constants.*;
+import static bfg.backend.service.logic.Constants.DANGER_ZONE;
+
 public class Plantation extends Module implements Component {
     private final static int h = 3;
     private final static int w = 3;
@@ -46,12 +49,20 @@ public class Plantation extends Module implements Component {
 
     @Override
     public Integer getRationality(List<Module> modules, List<Link> links, List<Resource> resources) {
+        if(!enoughPeople(modules, getId())) return null;
         boolean connect = false;
         for(Module module : modules){
             if(Objects.equals(module.getId_zone(), getId_zone())){
+                if(Objects.equals(module.getId(), getId())) continue;
                 Component c = TypeModule.values()[module.getModule_type()].createModule(module);
                 if(c.cross(getX(), getY(), w, h)){
                     return null;
+                }
+                if(module.getModule_type() == TypeModule.COSMODROME.ordinal()){
+                    if(cross(module.getX() - DANGER_ZONE, module.getY() - DANGER_ZONE,
+                            COSMODROME_W + 2 * DANGER_ZONE, COSMODROME_H + 2 * DANGER_ZONE)){
+                        return null;
+                    }
                 }
                 if(!connect && TypeModule.values()[module.getModule_type()].isLive()){
                     connect = c.cross(getX() + 1, getY(), w, h) || c.cross(getX() - 1, getY(), w, h) ||
@@ -68,14 +79,14 @@ public class Plantation extends Module implements Component {
 
     @Override
     public void getProduction(int idZone, List<Module> modules, List<Long> production) {
-        production.set(TypeResources.FOOD.ordinal(), production.get(TypeResources.FOOD.ordinal()) + 2);
-        production.set(TypeResources.O2.ordinal(), production.get(TypeResources.O2.ordinal()) + 4);
+        production.set(TypeResources.FOOD.ordinal(), production.get(TypeResources.FOOD.ordinal()) + 1640);
+        production.set(TypeResources.O2.ordinal(), production.get(TypeResources.O2.ordinal()) + 3650);
     }
 
     @Override
     public void getConsumption(int idZone, List<Module> modules, List<Long> consumption) {
-        consumption.set(TypeResources.CO2.ordinal(), consumption.get(TypeResources.CO2.ordinal()) + 2);
-        consumption.set(TypeResources.H2O.ordinal(), consumption.get(TypeResources.H2O.ordinal()) + 25);
+        consumption.set(TypeResources.CO2.ordinal(), consumption.get(TypeResources.CO2.ordinal()) + 5000);
+        consumption.set(TypeResources.H2O.ordinal(), consumption.get(TypeResources.H2O.ordinal()) + 25350);
         consumption.set(TypeResources.WT.ordinal(), consumption.get(TypeResources.WT.ordinal()) + 175000L);
 
     }
@@ -84,5 +95,10 @@ public class Plantation extends Module implements Component {
     public boolean cross(int x, int y, int w, int h) {
         return (x >= getX() && x <= getX() + Plantation.w && y >= getY() && y <= getY() + Plantation.h) ||
                 (getX() >= x && getX() <= x + w && getY() >= y && getY() <= y + h);
+    }
+
+    @Override
+    public int getRadius() {
+        return 0;
     }
 }
